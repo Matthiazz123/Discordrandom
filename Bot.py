@@ -4,8 +4,9 @@ from discord import message
 from discord.ext import commands
 import youtube_dl
 import os
-import time
+import asyncio
 import random
+token = ''
 client = commands.Bot(command_prefix="*")
 client.songs = ["awaawa.mp3","dababyletsgo.mp3","kerstboom.mp3","okayletsgo.mp3"]
 client.inactive = False
@@ -56,7 +57,7 @@ async def rndm(ctx):
                 break
             print(WaitTime)
             print('i:'+ str(i))
-            time.sleep(1)
+            await asyncio.sleep(1)
         #song_there = os.path.isfile("awaawa.mp3")
         #try:
         #    if song_there:
@@ -83,7 +84,7 @@ async def rndm(ctx):
             if file.endswith(".mp3"):
                 os.rename(file, "song.mp3")'''
         voice.play(discord.FFmpegPCMAudio(song))
-        time.sleep(5)
+        await asyncio.sleep(5)
         await voice.disconnect()
         WaitTime = random.randrange(60, 600)
         Times = Times + 1
@@ -91,7 +92,7 @@ async def rndm(ctx):
 
 
 
-client.run('NzY4NDg2NjAzNjQ3MDkwNzU4.X5BK7A.bxJKFZrgozIi5d4eSw8VRo2rSAw')
+client.run(token)
 
 # If you wish to securely hide your token, you can do so in a .env file.
 # 1. Create a .env in the same directory as your Python scripts
