@@ -6,13 +6,30 @@ import youtube_dl
 import os
 import asyncio
 import random
-token = ''
+from dotenv import load_dotenv
+
+load_dotenv()
+
+print(os.getenv('TOKEN'))
+
+token = str(os.getenv('TOKEN'))
 client = commands.Bot(command_prefix="*")
-client.songs = ["awaawa.mp3","dababyletsgo.mp3","kerstboom.mp3","okayletsgo.mp3"]
 client.inactive = False
 global WaitTime 
 number = 5
+client.songs =[]
 
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+ 
+for root, dirs, files in os.walk(dir_path):
+    for file in files:
+        if file.endswith('.mp3'):
+            print (root+'/'+str(file))
+            client.songs.append(file)
+
+
+print(client.songs)
 @client.event
 async def on_message(message):
     await client.process_commands(message)
@@ -22,17 +39,17 @@ async def on_message(message):
     if len(message.content) > 0:
         print(message.content)
         if "stop" in message.content:
-            print("INACTIVE")
             client.inactive = True
             print(client.inactive)
-            await message.channel.send('Stopped the random meme!!')
+            await message.channel.send('Stopped')
         
 
 
-@client.command()
-async def rndm(ctx):
+@client.command(name='rndm', help='randomly joins and does a meme')
+async def rndm(ctx, amount = '5'):
     client.inactive = False
     WaitTime = 10
+    number = int(amount)
     Times = 1
     await ctx.send("Started!")
     voiceChannel = ctx.author.voice.channel
@@ -42,10 +59,10 @@ async def rndm(ctx):
         print(client.inactive)
         if Times == number:
             client.inactive = False
-            print('done')
+            await ctx.send("Stopped!")
         
         if client.inactive == True:
-            print("stopped")
+            await ctx.send("Stopped!")
             break
         print(WaitTime/60)
         print(WaitTime)
@@ -58,36 +75,15 @@ async def rndm(ctx):
             print(WaitTime)
             print('i:'+ str(i))
             await asyncio.sleep(1)
-        #song_there = os.path.isfile("awaawa.mp3")
-        #try:
-        #    if song_there:
-        #        'os.remove("song.mp3")'
-        #except PermissionError:
-        #    await ctx.send("Wait for the current playing music to end or use the 'stop' command")
-        #    return
-
         voiceChannel = ctx.author.voice.channel
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-        }
-        '''with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                os.rename(file, "song.mp3")'''
         voice.play(discord.FFmpegPCMAudio(song))
         await asyncio.sleep(5)
         await voice.disconnect()
         WaitTime = random.randrange(60, 600)
         Times = Times + 1
+    await ctx.send("Done!")
 
 
 
